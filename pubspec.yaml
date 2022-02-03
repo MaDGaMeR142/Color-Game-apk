@@ -45,7 +45,7 @@ dev_dependencies:
   
 
 flutter_icons:
-  image_path: "C:/Flutter/colorgame/lib/icon/icon.png" 
+  image_path: "icon/icon.png" 
   android: true
   ios: true
   # optionally, as transparency is not allowed on app store

@@ -96,7 +96,7 @@ class _GameState extends State<Game> {
 
   void gamerun() {
     String input = _controller.text.toLowerCase();
-    input.trimRight();
+    input = input.replaceAll(' ', '');
     print(input);
     if (tclrs[input] == clr && istime) {
       over = " ";
@@ -250,7 +250,6 @@ class _GameState extends State<Game> {
                 Text(
                   'Highscore :  $_highscore',
                 ),
-                
               ],
             )
           ],
