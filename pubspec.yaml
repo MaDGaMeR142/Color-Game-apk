@@ -30,6 +30,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_countdown_timer: ^4.1.0
+  shared_preferences: ^2.0.12
   
 
 
@@ -41,9 +42,10 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: "^0.9.0"
+  
 
 flutter_icons:
-  image_path: "icon/icon.png" 
+  image_path: "C:/Flutter/colorgame/lib/icon/icon.png" 
   android: true
   ios: true
   # optionally, as transparency is not allowed on app store

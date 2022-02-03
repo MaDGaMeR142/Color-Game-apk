@@ -1,5 +1,8 @@
+
 import 'package:flutter/material.dart';
 import 'package:colorgame/game.dart';
+import 'dart:async';
+import 'dart:io';
 
 void main() {
   runApp(const MyApp());
@@ -33,8 +36,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
+  int _high=0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,6 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             ElevatedButton(
               onPressed: () {
+                
                 Navigator.push(
                   context,
                   MaterialPageRoute(

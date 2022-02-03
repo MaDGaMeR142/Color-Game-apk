@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:ffi';
+import 'dart:io';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter/material.dart';
 import "dart:math";
@@ -12,7 +14,9 @@ class Game extends StatefulWidget {
 }
 
 class _GameState extends State<Game> {
+  var _highscore;
   late TextEditingController _controller;
+
   @override
   void initState() {
     super.initState();
@@ -25,6 +29,23 @@ class _GameState extends State<Game> {
     super.dispose();
   }
 
+  Future<void> highscoreset(var n) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('highscore', n);
+  }
+
+  Future<int> highscoreread() async {
+    final prefs = await SharedPreferences.getInstance();
+    final n = prefs.getInt('highscore');
+    if (n == null)
+      _highscore = 0;
+    else
+      _highscore = n.toInt();
+    return 0;
+  }
+
+// set value
+  int _high = 0;
   String score = "";
   int countdown = 8;
   late Timer _timer;
@@ -48,11 +69,17 @@ class _GameState extends State<Game> {
   void gameover() {
     setState(() {
       _timer.cancel();
-      over = "Game over\nYour score : $counter";
+      var gamescore = counter;
+      over = "Game over\nYour score : $gamescore";
+      _high = gamescore;
       counter = 0;
       nameofcolor = " ";
       _controller.text = "";
       score = "";
+      if (gamescore > _highscore) {
+        highscoreset(gamescore);
+        _highscore = gamescore;
+      }
     });
   }
 
@@ -64,10 +91,13 @@ class _GameState extends State<Game> {
     textname = texts[textran];
     nameofcolor = textname;
     clr = clrs[randomNumber];
+    highscoreread();
   }
 
   void gamerun() {
     String input = _controller.text.toLowerCase();
+    input.trimRight();
+    print(input);
     if (tclrs[input] == clr && istime) {
       over = " ";
       counter++;
@@ -104,6 +134,11 @@ class _GameState extends State<Game> {
     Colors.blue,
     Colors.grey,
     Colors.orange,
+    Colors.cyan,
+    Colors.pink,
+    Colors.brown,
+    Colors.lime,
+    Colors.teal,
   ];
   static const tclrs = {
     "red": Colors.red,
@@ -114,6 +149,11 @@ class _GameState extends State<Game> {
     "blue": Colors.blue,
     "grey": Colors.grey,
     "orange": Colors.orange,
+    "cyan": Colors.cyan,
+    "pink": Colors.pink,
+    "brown": Colors.brown,
+    "lime": Colors.lime,
+    "teal": Colors.teal,
   };
   static const texts = [
     "red",
@@ -123,7 +163,12 @@ class _GameState extends State<Game> {
     "yellow",
     "blue",
     "grey",
-    "orange"
+    "orange",
+    "cyan",
+    "pink",
+    "brown",
+    "lime",
+    "teal",
   ];
   String buttonstate = "Start";
   static Random random = new Random();
@@ -132,13 +177,14 @@ class _GameState extends State<Game> {
   var nameofcolor = " ";
   static var textran = random.nextInt(texts.length);
   Color clr = clrs[randomNumber];
-  int counter = 0;
+  var counter = 0;
   var over = " ";
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "game",
       home: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           backgroundColor: Colors.blue,
           title: Text("Game of Colors"),
@@ -148,7 +194,7 @@ class _GameState extends State<Game> {
             Column(
               children: [
                 SizedBox(
-                  height: 20,
+                  height: 10,
                 ),
                 Text("Time : $countdown"),
                 SizedBox(
@@ -159,7 +205,7 @@ class _GameState extends State<Game> {
                   style: TextStyle(fontSize: 50, color: clr),
                 ),
                 SizedBox(
-                  height: 40,
+                  height: 20,
                 ),
                 TextField(
                   controller: _controller,
@@ -201,7 +247,10 @@ class _GameState extends State<Game> {
                       });
                     },
                     child: Text(buttonstate)),
-                Container()
+                Text(
+                  'Highscore :  $_highscore',
+                ),
+                
               ],
             )
           ],
