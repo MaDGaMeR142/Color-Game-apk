@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:ui';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 import 'package:flutter/material.dart';
 import "dart:math";
@@ -46,6 +48,8 @@ class _GameState extends State<Game> {
 
 // set value
   int _high = 0;
+  int level = 1;
+  int limit = 0;
   String score = "";
   int countdown = 8;
   late Timer _timer;
@@ -84,10 +88,12 @@ class _GameState extends State<Game> {
   }
 
   void gamestart() {
+    level = 1;
+    limit = 5;
     score = "Score : $counter";
     istime = true;
-    randomNumber = random.nextInt(texts.length);
-    textran = random.nextInt(texts.length);
+    randomNumber = random.nextInt(limit);
+    textran = random.nextInt(limit);
     textname = texts[textran];
     nameofcolor = textname;
     clr = clrs[randomNumber];
@@ -99,12 +105,27 @@ class _GameState extends State<Game> {
     input = input.replaceAll(' ', '');
     print(input);
     if (tclrs[input] == clr && istime) {
+      playsound_point();
       over = " ";
       counter++;
       score = "Score : $counter";
       countdown += 3;
-      randomNumber = random.nextInt(texts.length);
-      textran = random.nextInt(texts.length);
+      if (counter < 10) {
+        level = 1;
+        limit = 5;
+        randomNumber = random.nextInt(limit);
+        textran = random.nextInt(limit);
+      } else if (counter < 20) {
+        level = 2;
+        limit = 9;
+        randomNumber = random.nextInt(limit);
+        textran = random.nextInt(limit);
+      } else {
+        level = 3;
+        limit = texts.length;
+        randomNumber = random.nextInt(limit);
+        textran = random.nextInt(limit);
+      }
       textname = texts[textran];
       nameofcolor = textname;
       clr = clrs[randomNumber];
@@ -123,6 +144,12 @@ class _GameState extends State<Game> {
 
       nameofcolor = " ";
     });
+  }
+
+  void playsound_point() {
+    AudioCache player = new AudioCache();
+    const pointsound = "point.mp3";
+    player.play(pointsound);
   }
 
   static const clrs = <Color>[
@@ -170,6 +197,7 @@ class _GameState extends State<Game> {
     "lime",
     "teal",
   ];
+
   String buttonstate = "Start";
   static Random random = new Random();
   static int randomNumber = random.nextInt(texts.length);
@@ -196,12 +224,20 @@ class _GameState extends State<Game> {
                   itemBuilder: (context) => [
                     PopupMenuItem(
                         child: TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        setState(() {
+                          dialog_HTP(context);
+                        });
+                      },
                       child: Text('How to Play'),
                     )),
                     PopupMenuItem(
                         child: TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        colorslist(
+                          context,
+                        );
+                      },
                       child: Text('Color List'),
                     ))
                   ],
@@ -221,7 +257,14 @@ class _GameState extends State<Game> {
                   style: TextStyle(fontSize: 20),
                 ),
                 SizedBox(
-                  height: 20,
+                  height: 10,
+                ),
+                Text(
+                  "Level : $level",
+                  style: TextStyle(fontSize: 30),
+                ),
+                SizedBox(
+                  height: 10,
                 ),
                 Text(
                   nameofcolor,
@@ -285,6 +328,145 @@ class _GameState extends State<Game> {
           ],
         ),
       ),
+    );
+  }
+
+  Future<dynamic> colorslist(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Colors"),
+          content: Container(
+            width: 100,
+            height: 150,
+            child: SingleChildScrollView(
+              child: Column(children: [
+                Text(
+                  "Lvel 1",
+                  style: TextStyle(fontSize: 20),
+                ),
+                Row(
+                  children: [
+                    colorRow(Colors.red, "red"),
+                    Spacer(),
+                    colorRow(Colors.black, "black"),
+                  ],
+                ),
+                Row(
+                  children: [
+                    colorRow(Colors.purple, "purple"),
+                    Spacer(),
+                    colorRow(Colors.green, "green"),
+                  ],
+                ),
+                Row(
+                  children: [
+                    colorRow(Colors.yellow, "yellow"),
+                    Spacer(),
+                    colorRow(Colors.blue, "blue  "),
+                  ],
+                ),
+                Text(
+                  "Lvel 2",
+                  style: TextStyle(fontSize: 20),
+                ),
+                Row(
+                  children: [
+                    colorRow(Colors.grey, "grey"),
+                    Spacer(),
+                    colorRow(Colors.orange, "orange"),
+                  ],
+                ),
+                Row(
+                  children: [
+                    colorRow(Colors.cyan, "cyan"),
+                    Spacer(),
+                    colorRow(Colors.pink, "pink     "),
+                  ],
+                ),
+                Text(
+                  "Lvel 3",
+                  style: TextStyle(fontSize: 20),
+                ),
+                Row(
+                  children: [
+                    colorRow(Colors.brown, "brown"),
+                    Spacer(),
+                    colorRow(Colors.lime, "lime"),
+                  ],
+                ),
+                Row(
+                  children: [
+                    colorRow(Colors.teal, "teal"),
+                    Spacer(),
+                  ],
+                ),
+              ]),
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  Future<dynamic> dialog_HTP(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("HOW TO PLAY"),
+          content: Container(
+            width: 100,
+            height: 150,
+            child: Column(
+              children: [
+                Text("Enter the Color of the given text\n For example :\n"),
+                Text("If the given text is :"),
+                Text(
+                  "blue",
+                  style: TextStyle(color: Colors.red),
+                ),
+                Text("Enter red")
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+}
+
+class colorRow extends StatelessWidget {
+  colorRow(this.c, this.s);
+  Color c;
+  var s;
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(
+          Icons.circle,
+          color: c,
+        ),
+        Text(s)
+      ],
     );
   }
 }
