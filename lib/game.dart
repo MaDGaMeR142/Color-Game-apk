@@ -71,6 +71,7 @@ class _GameState extends State<Game> {
   }
 
   void gameover() {
+    ps_over();
     setState(() {
       _timer.cancel();
       var gamescore = counter;
@@ -88,6 +89,7 @@ class _GameState extends State<Game> {
   }
 
   void gamestart() {
+    ps_start();
     level = 1;
     limit = 5;
     score = "Score : $counter";
@@ -105,11 +107,12 @@ class _GameState extends State<Game> {
     input = input.replaceAll(' ', '');
     print(input);
     if (tclrs[input] == clr && istime) {
-      playsound_point();
+      ps_point();
       over = " ";
       counter++;
       score = "Score : $counter";
       countdown += 3;
+      if (counter == 10 || counter == 20) ps_level();
       if (counter < 10) {
         level = 1;
         limit = 5;
@@ -146,9 +149,27 @@ class _GameState extends State<Game> {
     });
   }
 
-  void playsound_point() {
+  void ps_start() {
+    AudioCache player = new AudioCache();
+    const pointsound = "gamestart.mp3";
+    player.play(pointsound);
+  }
+
+  void ps_point() {
     AudioCache player = new AudioCache();
     const pointsound = "point.mp3";
+    player.play(pointsound);
+  }
+
+  void ps_level() {
+    AudioCache player = new AudioCache();
+    const pointsound = "levelup.mp3";
+    player.play(pointsound);
+  }
+
+  void ps_over() {
+    AudioCache player = new AudioCache();
+    const pointsound = "gameover.mp3";
     player.play(pointsound);
   }
 
