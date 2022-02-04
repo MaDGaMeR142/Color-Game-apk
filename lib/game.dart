@@ -186,17 +186,40 @@ class _GameState extends State<Game> {
       home: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          backgroundColor: Colors.blue,
-          title: Text("Game of Colors"),
-        ),
+            backgroundColor: Colors.blue,
+            title: Row(
+              children: [
+                Text("Game of Colors"),
+                Spacer(),
+                PopupMenuButton(
+                  icon: Icon(Icons.dehaze),
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                        child: TextButton(
+                      onPressed: () {},
+                      child: Text('How to Play'),
+                    )),
+                    PopupMenuItem(
+                        child: TextButton(
+                      onPressed: () {},
+                      child: Text('Color List'),
+                    ))
+                  ],
+                ),
+              ],
+            )),
         body: Stack(
           children: [
             Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(
                   height: 10,
                 ),
-                Text("Time : $countdown"),
+                Text(
+                  "Time : $countdown",
+                  style: TextStyle(fontSize: 20),
+                ),
                 SizedBox(
                   height: 20,
                 ),
@@ -215,6 +238,12 @@ class _GameState extends State<Game> {
                       gamerun();
                     });
                   },
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'enter the text color',
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 10.0),
+                  ),
                 ),
                 SizedBox(
                   height: 30,
@@ -249,6 +278,7 @@ class _GameState extends State<Game> {
                     child: Text(buttonstate)),
                 Text(
                   'Highscore :  $_highscore',
+                  style: (TextStyle(fontSize: 20)),
                 ),
               ],
             )
