@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
-import 'dart:io';
 import 'dart:ui';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -47,6 +45,7 @@ class _GameState extends State<Game> {
   }
 
 // set value
+
   int _high = 0;
   int level = 1;
   int limit = 0;
@@ -175,7 +174,7 @@ class _GameState extends State<Game> {
 
   static const clrs = <Color>[
     Colors.red,
-    Colors.black,
+    Colors.white,
     Colors.purple,
     Colors.green,
     Colors.yellow,
@@ -190,7 +189,7 @@ class _GameState extends State<Game> {
   ];
   static const tclrs = {
     "red": Colors.red,
-    "black": Colors.black,
+    "white": Colors.white,
     "purple": Colors.purple,
     "green": Colors.green,
     "yellow": Colors.yellow,
@@ -205,7 +204,7 @@ class _GameState extends State<Game> {
   };
   static const texts = [
     "red",
-    "black",
+    "white",
     "purple",
     "green",
     "yellow",
@@ -235,12 +234,13 @@ class _GameState extends State<Game> {
       home: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-            backgroundColor: Colors.blue,
+            backgroundColor: Colors.black87,
             title: Row(
               children: [
                 Text("Game of Colors"),
                 Spacer(),
                 PopupMenuButton(
+                  color: Colors.black87,
                   icon: Icon(Icons.dehaze),
                   itemBuilder: (context) => [
                     PopupMenuItem(
@@ -267,6 +267,17 @@ class _GameState extends State<Game> {
             )),
         body: Stack(
           children: [
+            Container(
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+                colors: [
+                  Color(0xFF000000),
+                  Color(0xFF2d3436),
+                ],
+              )),
+            ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -282,14 +293,20 @@ class _GameState extends State<Game> {
                 ),
                 Text(
                   "Level : $level",
-                  style: TextStyle(fontSize: 30),
+                  style: TextStyle(fontSize: 30, color: Colors.white54),
                 ),
                 SizedBox(
                   height: 10,
                 ),
-                Text(
-                  nameofcolor,
-                  style: TextStyle(fontSize: 50, color: clr),
+                Container(
+                  alignment: Alignment.center,
+                  color: Colors.black54,
+                  width: 170,
+                  height: 70,
+                  child: Text(
+                    nameofcolor,
+                    style: TextStyle(fontSize: 50, color: clr),
+                  ),
                 ),
                 SizedBox(
                   height: 20,
@@ -302,7 +319,9 @@ class _GameState extends State<Game> {
                       gamerun();
                     });
                   },
+                  style: TextStyle(color: Colors.white),
                   decoration: InputDecoration(
+                    labelStyle: TextStyle(color: Colors.white60),
                     border: OutlineInputBorder(),
                     labelText: 'enter the text color',
                     contentPadding:
@@ -314,16 +333,19 @@ class _GameState extends State<Game> {
                 ),
                 Text(
                   over,
-                  style: TextStyle(fontSize: 30),
+                  style: TextStyle(fontSize: 30, color: Colors.white54),
                 ),
                 Text(
                   score,
-                  style: TextStyle(fontSize: 30),
+                  style: TextStyle(fontSize: 30, color: Colors.white54),
                 ),
                 SizedBox(
                   height: 20,
                 ),
                 ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.black38,
+                    ),
                     onPressed: () {
                       if (sos) {
                         countdowntimer();
@@ -342,7 +364,7 @@ class _GameState extends State<Game> {
                     child: Text(buttonstate)),
                 Text(
                   'Highscore :  $_highscore',
-                  style: (TextStyle(fontSize: 20)),
+                  style: (TextStyle(fontSize: 20, color: Colors.white54)),
                 ),
               ],
             )
@@ -357,6 +379,7 @@ class _GameState extends State<Game> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.grey,
           title: Text("Colors"),
           content: Container(
             width: 100,
@@ -371,7 +394,7 @@ class _GameState extends State<Game> {
                   children: [
                     colorRow(Colors.red, "red"),
                     Spacer(),
-                    colorRow(Colors.black, "black"),
+                    colorRow(Colors.white, "white"),
                   ],
                 ),
                 Row(
