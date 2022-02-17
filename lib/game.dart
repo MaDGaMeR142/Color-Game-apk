@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:audioplayers/audioplayers.dart';
-
 import 'package:flutter/material.dart';
 import "dart:math";
+import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
+
+import 'globals/themes.dart';
 
 class Game extends StatefulWidget {
   Game({Key? key}) : super(key: key);
@@ -45,12 +47,14 @@ class _GameState extends State<Game> {
   }
 
 // set value
-
-  int _high = 0;
+  var _high;
+  var checkclr;
+  var button1txt = "Option 1";
+  var button2txt = "Option 2";
   int level = 1;
   int limit = 0;
   String score = "";
-  int countdown = 8;
+  int countdown = 5;
   late Timer _timer;
   bool istime = true;
   bool sos = true;
@@ -80,6 +84,8 @@ class _GameState extends State<Game> {
       nameofcolor = " ";
       _controller.text = "";
       score = "";
+      button1txt = "Option 1";
+      button2txt = "Option 2";
       if (gamescore > _highscore) {
         highscoreset(gamescore);
         _highscore = gamescore;
@@ -98,39 +104,43 @@ class _GameState extends State<Game> {
     textname = texts[textran];
     nameofcolor = textname;
     clr = clrs[randomNumber];
+    setButtonColor(nameofcolor, clr);
     highscoreread();
   }
 
   void gamerun() {
-    String input = _controller.text.toLowerCase();
-    input = input.replaceAll(' ', '');
+    var input = checkclr;
     print(input);
     if (tclrs[input] == clr && istime) {
       ps_point();
       over = " ";
       counter++;
       score = "Score : $counter";
-      countdown += 3;
+
       if (counter == 10 || counter == 20) ps_level();
       if (counter < 10) {
         level = 1;
         limit = 5;
         randomNumber = random.nextInt(limit);
         textran = random.nextInt(limit);
+        countdown += 3;
       } else if (counter < 20) {
         level = 2;
         limit = 9;
         randomNumber = random.nextInt(limit);
         textran = random.nextInt(limit);
+        countdown += 2;
       } else {
         level = 3;
         limit = texts.length;
         randomNumber = random.nextInt(limit);
         textran = random.nextInt(limit);
+        countdown += 1;
       }
       textname = texts[textran];
       nameofcolor = textname;
       clr = clrs[randomNumber];
+      setButtonColor(nameofcolor, clr);
       _controller.clear();
     } else {
       gameover();
@@ -143,6 +153,8 @@ class _GameState extends State<Game> {
       counter = 0;
       _timer.cancel();
       countdown = 8;
+      button1txt = "Option 1";
+      button2txt = "Option 2";
 
       nameofcolor = " ";
     });
@@ -172,6 +184,18 @@ class _GameState extends State<Game> {
     player.play(pointsound);
   }
 
+  void setButtonColor(var c1, var c2) {
+    var r = random.nextInt(2);
+
+    if (r < 0.5) {
+      button1txt = c1.toString();
+      button2txt = clrts[c2].toString();
+    } else {
+      button1txt = clrts[c2].toString();
+      button2txt = c1.toString();
+    }
+  }
+
   static const clrs = <Color>[
     Colors.red,
     Colors.white,
@@ -187,7 +211,7 @@ class _GameState extends State<Game> {
     Colors.lime,
     Colors.teal,
   ];
-  static const tclrs = {
+  var tclrs = {
     "red": Colors.red,
     "white": Colors.white,
     "purple": Colors.purple,
@@ -201,6 +225,21 @@ class _GameState extends State<Game> {
     "brown": Colors.brown,
     "lime": Colors.lime,
     "teal": Colors.teal,
+  };
+  var clrts = {
+    Colors.red: "red",
+    Colors.white: "white",
+    Colors.purple: "purple",
+    Colors.green: "green",
+    Colors.yellow: "yellow",
+    Colors.blue: "blue",
+    Colors.grey: "grey",
+    Colors.orange: "orange",
+    Colors.cyan: "cyan",
+    Colors.pink: "pink",
+    Colors.brown: "brown",
+    Colors.lime: "lime",
+    Colors.teal: "teal",
   };
   static const texts = [
     "red",
@@ -260,7 +299,25 @@ class _GameState extends State<Game> {
                         );
                       },
                       child: Text('Color List'),
-                    ))
+                    )),
+                    PopupMenuItem(
+                        child: TextButton(
+                            onPressed: () {
+                              showAnimatedDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                        backgroundColor: Colors.black38,
+                                        title: Text("Colors",
+                                            style:
+                                                TextStyle(color: Colors.white)),
+                                        content: Container(
+                                            width: 100,
+                                            height: 150,
+                                            child: Column()));
+                                  });
+                            },
+                            child: Text("Themes")))
                   ],
                 ),
               ],
@@ -268,105 +325,113 @@ class _GameState extends State<Game> {
         body: Stack(
           children: [
             Container(
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-                colors: [
-                  Color(0xFF000000),
-                  Color(0xFF2d3436),
-                ],
-              )),
+              decoration: gradient,
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  "Time : $countdown",
-                  style: TextStyle(fontSize: 20),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  "Level : $level",
-                  style: TextStyle(fontSize: 30, color: Colors.white54),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Container(
-                  alignment: Alignment.center,
-                  color: Colors.black54,
-                  width: 170,
-                  height: 70,
-                  child: Text(
-                    nameofcolor,
-                    style: TextStyle(fontSize: 50, color: clr),
+            Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 10,
                   ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                TextField(
-                  controller: _controller,
-                  textAlign: TextAlign.center,
-                  onSubmitted: (value) {
-                    setState(() {
-                      gamerun();
-                    });
-                  },
-                  style: TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    labelStyle: TextStyle(color: Colors.white60),
-                    border: OutlineInputBorder(),
-                    labelText: 'enter the text color',
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 10.0),
+                  Text(
+                    "Time : $countdown",
+                    style: TextStyle(fontSize: 20, color: Colors.white70),
                   ),
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                Text(
-                  over,
-                  style: TextStyle(fontSize: 30, color: Colors.white54),
-                ),
-                Text(
-                  score,
-                  style: TextStyle(fontSize: 30, color: Colors.white54),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.black38,
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "Level : $level",
+                    style: TextStyle(fontSize: 30, color: Colors.white),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                    alignment: Alignment.center,
+                    color: Colors.black87,
+                    width: 170,
+                    height: 70,
+                    child: Text(
+                      nameofcolor,
+                      style: TextStyle(fontSize: 50, color: clr),
                     ),
-                    onPressed: () {
-                      if (sos) {
-                        countdowntimer();
-                        gamestart();
-                      } else
-                        resetgame();
-                      sos = !sos;
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                    width: 350,
+                    child: Row(
+                      children: [
+                        ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.black38,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                checkclr = button1txt;
+                                gamerun();
+                              });
+                            },
+                            child: Text(button1txt)),
+                        Spacer(),
+                        ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.black38,
+                            ),
+                            onPressed: () {
+                              checkclr = button2txt;
+                              gamerun();
+                            },
+                            child: Text(button2txt))
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  Text(
+                    over,
+                    style: TextStyle(fontSize: 30, color: Colors.white),
+                  ),
+                  Text(
+                    score,
+                    style: TextStyle(fontSize: 30, color: Colors.white54),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.black38,
+                      ),
+                      onPressed: () {
+                        if (sos) {
+                          countdowntimer();
+                          gamestart();
+                        } else
+                          resetgame();
+                        sos = !sos;
 
-                      setState(() {
-                        if (sos)
-                          buttonstate = "Start";
-                        else
-                          buttonstate = "Restart";
-                      });
-                    },
-                    child: Text(buttonstate)),
-                Text(
-                  'Highscore :  $_highscore',
-                  style: (TextStyle(fontSize: 20, color: Colors.white54)),
-                ),
-              ],
+                        setState(() {
+                          if (sos)
+                            buttonstate = "Start";
+                          else
+                            buttonstate = "Restart";
+                        });
+                      },
+                      child: Text(buttonstate)),
+                  Text(
+                    'Highscore :  $_highscore',
+                    style: (TextStyle(fontSize: 20, color: Colors.white54)),
+                  ),
+                ],
+              ),
             )
           ],
         ),
@@ -375,12 +440,13 @@ class _GameState extends State<Game> {
   }
 
   Future<dynamic> colorslist(BuildContext context) {
-    return showDialog(
+    return showAnimatedDialog(
+      barrierDismissible: true,
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Colors.grey,
-          title: Text("Colors"),
+          backgroundColor: Colors.black38,
+          title: Text("Colors", style: TextStyle(color: Colors.white)),
           content: Container(
             width: 100,
             height: 150,
@@ -451,7 +517,7 @@ class _GameState extends State<Game> {
           ),
           actions: [
             TextButton(
-              child: Text("OK"),
+              child: Text("OK", style: TextStyle(color: Colors.white)),
               onPressed: () {
                 Navigator.pop(context);
               },
@@ -463,29 +529,36 @@ class _GameState extends State<Game> {
   }
 
   Future<dynamic> dialog_HTP(BuildContext context) {
-    return showDialog(
+    return showAnimatedDialog(
+      barrierDismissible: true,
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("HOW TO PLAY"),
+          backgroundColor: Colors.black54,
+          title: Text("HOW TO PLAY", style: TextStyle(color: Colors.white)),
           content: Container(
             width: 100,
             height: 150,
-            child: Column(
-              children: [
-                Text("Enter the Color of the given text\n For example :\n"),
-                Text("If the given text is :"),
-                Text(
-                  "blue",
-                  style: TextStyle(color: Colors.red),
-                ),
-                Text("Enter red")
-              ],
+            child: Container(
+              color: Colors.black54,
+              child: Column(
+                children: [
+                  Text("Enter the Color of the given text\n For example :\n",
+                      style: TextStyle(color: Colors.white)),
+                  Text("If the given text is :",
+                      style: TextStyle(color: Colors.white)),
+                  Text(
+                    "blue",
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  Text("Enter red", style: TextStyle(color: Colors.white))
+                ],
+              ),
             ),
           ),
           actions: [
             TextButton(
-              child: Text("OK"),
+              child: Text("OK", style: TextStyle(color: Colors.white)),
               onPressed: () {
                 Navigator.pop(context);
               },
@@ -509,7 +582,7 @@ class colorRow extends StatelessWidget {
           Icons.circle,
           color: c,
         ),
-        Text(s)
+        Text(s, style: TextStyle(color: Colors.white))
       ],
     );
   }
